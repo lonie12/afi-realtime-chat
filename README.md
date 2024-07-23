@@ -18,7 +18,7 @@ Avant d'exécuter l'application, assurez-vous d'avoir les éléments suivants in
 1. Clonez ce dépôt sur votre machine locale :
 
     ```
-    git clone https://github.com/lonie12/moneymanager
+    git clone https://github.com/lonie12/afi-realtime-chat
     ```
 
 2. Accédez au répertoire du projet :
