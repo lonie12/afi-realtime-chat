@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "realtime-chat",
+    "name": "Realtime Chat",
     "slug": "realtime-chat",
+    "scheme": "your-app-scheme",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,16 +13,27 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.realtime.chat",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-google-signin/google-signin",
+      "@react-native-firebase/app"
+    ],
+    "experiments": {
+      "tsconfigPaths": true
     }
   }
 }

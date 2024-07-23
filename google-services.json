@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "764584036975",
+    "project_id": "afi-chat-e4ecc",
+    "storage_bucket": "afi-chat-e4ecc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764584036975:android:d0564cb8568f87b4da5b9a",
+        "android_client_info": {
+          "package_name": "com.realtime.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "764584036975-92gl0ojo90e5d8qjieiuvhb2tj88m795.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.realtime.chat",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "764584036975-6gt66gedmrd0kjtlu8p1h3qkmf31dj4b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxTWXjSWr2XA2fHxKVkx1tapRYwl--eyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "764584036975-6gt66gedmrd0kjtlu8p1h3qkmf31dj4b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
