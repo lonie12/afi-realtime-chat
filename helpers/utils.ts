@@ -3,7 +3,8 @@ import { User } from "@react-native-google-signin/google-signin";
 import { ChatInfo, MessageInfo, UserInfo } from "./types";
 import uuid from 'react-native-uuid';
 import auth from '@react-native-firebase/auth';
-import { chatCollection, messageCollection } from "./constants";
+import { chatCollection, messageCollection, userCollection } from "./constants";
+import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 
 const utilsGoogleSignIn = async (): Promise<User | undefined> => {
     try {
@@ -13,6 +14,24 @@ const utilsGoogleSignIn = async (): Promise<User | undefined> => {
         console.error(error);
     }
 };
+
+const utilsIsUserExists = async (
+    email: string
+): Promise<boolean> => {
+    const userRef = userCollection.doc(email);
+    const exists = (await userRef.get()).exists;
+    if (exists) return true;
+    return false;
+}
+
+const utilsCreateUser = async (user: User) => {
+    const exists = await utilsIsUserExists(user.user.email);
+    if (!exists) {
+        const userRef = userCollection.doc(user.user.email);
+        await userRef.set(user.user);
+        await utilsCreateChat(user.user, user.user);
+    }
+}
 
 const utilsSignUpCredential = async (
     { idToken }: { idToken: string }
@@ -28,13 +47,13 @@ const utilsSignUpCredential = async (
 };
 
 const utilsCreateChat = async (
-    s: User,
-    r: User
+    s: UserInfo,
+    r: UserInfo
 ): Promise<boolean> => {
     let result = false;
     try {
         const chatData = {
-            id: uuid.v4(), sender: s.user, receiver: r.user
+            id: uuid.v4(), sender: s, receiver: r
         };
         await chatCollection.add(chatData);
         result = true;
@@ -94,5 +113,7 @@ export {
     utilsCreateChat,
     utilsSendMessage,
     utilsGetUserChats,
-    utilsGetChatMessages
+    utilsGetChatMessages,
+    utilsIsUserExists,
+    utilsCreateUser,
 }

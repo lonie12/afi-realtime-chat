@@ -1,7 +1,7 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from '../hooks/useStorageState';
 import { utilsGoogleSignIn, utilsSignUpCredential } from './utils';
-import { User } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, User } from '@react-native-google-signin/google-signin';
 
 const AuthContext = createContext<{
   signIn: () => Promise<User | undefined>;
@@ -42,6 +42,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
           }
         },
         signOut: () => {
+          GoogleSignin.signOut();
           setSession(null);
         },
         session,

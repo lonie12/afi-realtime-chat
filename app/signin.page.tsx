@@ -2,20 +2,18 @@ import { userCollection } from '@/helpers/constants';
 import { useSession } from '@/helpers/ctx';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
-import { utilsCreateChat } from '@/helpers/utils';
+import { utilsCreateChat, utilsCreateUser, utilsIsUserExists } from '@/helpers/utils';
 
 export default function SignIn() {
     const { signIn } = useSession();
+
+    const navigateToPage = () => router.replace('(navs)');
 
     const login = async () => {
         try {
             var user = await signIn();
             if (user) {
-                const userRef = userCollection.doc(user.user.email);
-                await userRef.set(user.user, { merge: true });
-                utilsCreateChat(user, user).then(() => {
-                    router.replace('(navs)');
-                });
+                utilsCreateUser(user).then(navigateToPage);
             }
         } catch (error) { console.log(error); }
     }

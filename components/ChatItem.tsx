@@ -22,7 +22,7 @@ const ChatItem = ({ chat }: { chat: ChatInfo }) => {
                     size={40}
                     source={{ uri: chat.receiver.photo! }} />
                 <View className="flex pl-[15]">
-                    <Text className="text-text text-sm font-semibold">{chat.receiver.givenName}</Text>
+                    <Text className="text-text text-sm font-semibold">{chat.receiver.name}</Text>
                     <Text className="text-text text-xs pt-1.5">User interface developer</Text>
                 </View>
             </View>

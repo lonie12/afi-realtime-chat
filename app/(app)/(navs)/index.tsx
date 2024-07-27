@@ -1,22 +1,29 @@
 import AppBar from "@/components/AppBar";
 import ChatItem from "@/components/ChatItem";
-import FloatingButton from "@/components/FloatingButton";
 import { useSession } from "@/helpers/ctx";
 import { ChatInfo, UserInfo } from "@/helpers/types";
 import { utilsGetUserChats } from "@/helpers/utils";
 import { InfoCircle } from "iconsax-react-native";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
+import NewMessageModal from "../(chat)/modals/NewMessage.modal";
+import FloatingButton from "@/components/Button";
 
 
 const MessagesPage = () => {
     const { signOut, session } = useSession();
     const [chats, setChats] = useState<ChatInfo[]>([]);
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
     const userChats = async () => {
         const currentUser = JSON.parse(session!) as UserInfo;
         const chats = await utilsGetUserChats(currentUser.email);
         if (chats) return setChats(chats);
+    }
+
+    const dismissModal = async () => {
+        await userChats();
+        setIsModalVisible(!isModalVisible);
     }
 
     useEffect(() => {
@@ -34,7 +41,8 @@ const MessagesPage = () => {
                     <ChatItem chat={_} key={idx} />
                 ))}
             </ScrollView>
-            <FloatingButton />
+            <NewMessageModal dismiss={dismissModal} isVisible={isModalVisible} />
+            <FloatingButton onPress={dismissModal} />
         </View>
     );
 }

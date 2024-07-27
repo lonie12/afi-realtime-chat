@@ -89,8 +89,8 @@ const ChatPage = () => {
             {/* Bottom: Message Input & Send Button */}
             <View className="flex flex-row p-4 bg-white">
                 <StyledInput
+                    style={{ flex: 1 }}
                     placeholder="Write your message..."
-                    className="flex-1"
                     prefix={<PrefixIcon />}
                     value={message}
                     onChangeText={(value) => setMessage(value)}
