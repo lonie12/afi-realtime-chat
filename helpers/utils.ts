@@ -1,10 +1,9 @@
-import { GoogleSignin } from "@/services/firebase.service";
+import { database, GoogleSignin } from "@/services/firebase.service";
 import { User } from "@react-native-google-signin/google-signin";
 import { ChatInfo, MessageInfo, UserInfo } from "./types";
 import uuid from 'react-native-uuid';
-import auth from '@react-native-firebase/auth';
 import { chatCollection, messageCollection, userCollection } from "./constants";
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import { Filter } from "@react-native-firebase/firestore";
 
 const utilsGoogleSignIn = async (): Promise<User | undefined> => {
     try {
@@ -15,62 +14,31 @@ const utilsGoogleSignIn = async (): Promise<User | undefined> => {
     }
 };
 
-const utilsIsUserExists = async (
-    email: string
-): Promise<boolean> => {
-    const userRef = userCollection.doc(email);
-    const exists = (await userRef.get()).exists;
-    if (exists) return true;
+const utilsIsUserExists = async (email: string): Promise<boolean> => {
+    const userExists = await userCollection.doc(email).get();
+    if (userExists.exists) return true;
     return false;
 }
 
-const utilsCreateUser = async (user: User) => {
-    const exists = await utilsIsUserExists(user.user.email);
-    if (!exists) {
-        const userRef = userCollection.doc(user.user.email);
-        await userRef.set(user.user);
-        await utilsCreateChat(user.user, user.user);
-    }
-}
-
-const utilsSignUpCredential = async (
-    { idToken }: { idToken: string }
-): Promise<boolean> => {
+const utilsCreateUser = async (user: UserInfo) => {
     try {
-        const credential = auth.GoogleAuthProvider.credential(idToken);
-        await auth().signInWithCredential(credential);
-        return true;
-    } catch (error) {
-        console.error(error);
-        return false;
-    }
-};
+        const userExists = await utilsIsUserExists(user.email);
+        if (!userExists) {
+            await userCollection.doc(user.email).set(user);
+            await utilsCreateChat(user, user);
+        }
+    } catch (error) { console.log(error) }
+}
 
 const utilsCreateChat = async (
-    s: UserInfo,
-    r: UserInfo
+    sender: UserInfo,
+    receiver: UserInfo
 ): Promise<boolean> => {
     let result = false;
     try {
-        const chatData = {
-            id: uuid.v4(), sender: s, receiver: r
-        };
-        await chatCollection.add(chatData);
+        const chatData = { sender, receiver };
+        await chatCollection.add({ ...chatData, id: uuid.v4() });
         result = true;
-    } catch (error) { console.log(error); }
-    return result;
-}
-
-const utilsSendMessage = async (
-    chatId: string,
-    senderId: string,
-    content: string
-): Promise<boolean> => {
-    let result = false;
-    try {
-        const messageData = { id: uuid.v4(), chatId, senderId, content };
-        const message = await messageCollection.add(messageData);
-        if (message) { result = true };
     } catch (error) { console.log(error); }
     return result;
 }
@@ -80,7 +48,11 @@ const utilsGetUserChats = async (
 ): Promise<ChatInfo[] | undefined> => {
     try {
         const snapshots = await chatCollection.where(
-            'sender.email', '==', email
+            // 'sender.email', '==', email
+            Filter.or(
+                Filter('sender.email', '==', email),
+                Filter('receiver.email', '==', email),
+            )
         ).get();
         const chats: any[] = [];
         snapshots.docs.forEach((chatDoc) => {
@@ -91,25 +63,34 @@ const utilsGetUserChats = async (
     } catch (error) { console.log(error); return undefined }
 }
 
+const utilsSendMessage = async (
+    chatId: string,
+    senderId: string,
+    content: string
+) => {
+    try {
+        const refId = `messages/${chatId}`;
+        const newReference = database().ref(refId).push();
+        newReference.set({
+            id: uuid.v4(), chatId, senderId, content
+        })
+    } catch (error) { console.log(error); }
+}
+
 const utilsGetChatMessages = async (
     chatId: string
 ): Promise<MessageInfo[] | undefined> => {
     try {
-        const snapshots = await messageCollection.where(
-            'chatId', '==', chatId
-        ).get();
-        const messages: any[] = [];
-        snapshots.docs.forEach((messageDoc) => {
-            const messageData = messageDoc.data();
-            messages.push(messageData);
-        });
+        let messages: any[] = [];
+        const snapshots = await database().ref(`messages/${chatId}`).once('value');
+        (snapshots as unknown as any[])
+            .forEach((e) => { messages.push(e.val()); });
         return messages;
     } catch (error) { console.log(error); return undefined }
 }
 
 export {
     utilsGoogleSignIn,
-    utilsSignUpCredential,
     utilsCreateChat,
     utilsSendMessage,
     utilsGetUserChats,

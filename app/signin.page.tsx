@@ -3,6 +3,7 @@ import { useSession } from '@/helpers/ctx';
 import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 import { utilsCreateChat, utilsCreateUser, utilsIsUserExists } from '@/helpers/utils';
+import { database } from '@/services/firebase.service';
 
 export default function SignIn() {
     const { signIn } = useSession();
@@ -11,8 +12,9 @@ export default function SignIn() {
 
     const login = async () => {
         try {
-            var user = await signIn();
-            if (user) {
+            var userLoggedIn = await signIn();
+            if (userLoggedIn) {
+                const user = userLoggedIn.user;
                 utilsCreateUser(user).then(navigateToPage);
             }
         } catch (error) { console.log(error); }

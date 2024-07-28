@@ -11,8 +11,7 @@ const StyledInput = ({ prefix, ...props }: StyledTextInputProps) => {
     return (
         <TextInput
             {...props}
-            style={{ borderWidth: 1 }}
-            className="items-center justify-center flex-row px-3 h-12 border-[#E0E3DD] rounded-[100]"
+            className="w-max items-center justify-center flex-row px-3 h-12 border-[#E0E3DD] rounded-[100]"
         />
     );
 }

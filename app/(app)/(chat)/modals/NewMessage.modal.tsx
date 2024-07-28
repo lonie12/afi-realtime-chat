@@ -4,7 +4,6 @@ import { userCollection } from "@/helpers/constants";
 import { useSession } from "@/helpers/ctx";
 import { UserInfo } from "@/helpers/types";
 import { utilsCreateChat, utilsIsUserExists } from "@/helpers/utils";
-import { User } from "@react-native-google-signin/google-signin";
 import { useState } from "react";
 import { Modal, ModalProps, Text, View } from "react-native";
 
@@ -20,12 +19,14 @@ const NewMessageModal = ({ dismiss, isVisible }: NewMessageModalProps) => {
 
     const userWithEmail = async () => {
         setIsLoading(true);
-        const exists = await utilsIsUserExists(email);
-        if (exists) {
-            const sender = JSON.parse(session!) as UserInfo;
+        const userEmail = email.trim().toLowerCase();
+        const sender = JSON.parse(session!) as UserInfo;
+        const userExists = await utilsIsUserExists(userEmail);
+        if (userExists && userEmail != sender.email) {
             const document = await userCollection.doc(email).get();
             const receiver = document.data() as unknown as UserInfo;
             utilsCreateChat(sender, receiver).then((value) => {
+                setEmail("");
                 if (value) { dismiss() }
             });
         }
@@ -44,6 +45,7 @@ const NewMessageModal = ({ dismiss, isVisible }: NewMessageModalProps) => {
             >
                 <Text className="pb-4 text-lg font-bold text-text">Nouveau chat</Text>
                 <StyledInput
+                    style={{ borderWidth: 1 }}
                     value={email}
                     onChangeText={(value) => setEmail(value)}
                     placeholder="Rechercher un utilisateur"

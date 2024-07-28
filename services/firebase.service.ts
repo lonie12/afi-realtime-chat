@@ -2,6 +2,7 @@ import {
     GoogleSignin
 } from "@react-native-google-signin/google-signin";
 import firestore from "@react-native-firebase/firestore";
+import database from "@react-native-firebase/database";
 
 
 GoogleSignin.configure({
@@ -10,4 +11,4 @@ GoogleSignin.configure({
     forceCodeForRefreshToken: true,
 });
 
-export { GoogleSignin, firestore };
+export { GoogleSignin, firestore, database };
